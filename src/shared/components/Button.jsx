@@ -1,8 +1,11 @@
 import styles from './Button.module.css'
 
-function Button({ variant = 'secondary', className = '', ...props }) {
+function Button({ variant = 'secondary', fullWidth = false, className = '', ...props }) {
   const variantClass = styles[variant] ?? styles.secondary
-  return <button className={`${styles.button} ${variantClass} ${className}`} {...props} />
+  const widthClass = fullWidth ? styles.fullWidth : ''
+  return (
+    <button className={`${styles.button} ${variantClass} ${widthClass} ${className}`} {...props} />
+  )
 }
 
 export default Button

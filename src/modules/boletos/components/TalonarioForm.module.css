@@ -1,19 +1,21 @@
 .form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: var(--space-2);
-  align-items: end;
 }
 
 .preview {
-  grid-column: 1 / -1;
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
+  padding: 0.6rem 0.8rem;
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
 }
 
 .actions {
-  grid-column: 1 / -1;
   display: flex;
-  justify-content: flex-end;
-  gap: 0.6rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
 }

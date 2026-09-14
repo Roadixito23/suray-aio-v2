@@ -1,11 +1,13 @@
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
 body {
   margin: 0;
   min-width: 320px;
+  overscroll-behavior-y: contain;
 }
 
 body {
@@ -14,19 +16,54 @@ body {
   background: var(--color-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1,
 h2,
 h3 {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
+  font-weight: 700;
   margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
 }
 
 button {
   font-family: inherit;
+  color: inherit;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
 }
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
+}
+
+::selection {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+/* Slim scrollbars everywhere, closer to mobile OS chrome */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
 }

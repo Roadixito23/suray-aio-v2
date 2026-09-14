@@ -61,14 +61,14 @@ function GuiaForm({ initialValue, onSubmit, onCancel }) {
         error={errors.monto}
       />
       <div className={styles.actions}>
+        <Button type="submit" variant="primary" fullWidth>
+          {initialValue ? 'Guardar cambios' : 'Agregar guía'}
+        </Button>
         {onCancel && (
-          <Button type="button" variant="secondary" onClick={onCancel}>
+          <Button type="button" variant="text" fullWidth onClick={onCancel}>
             Cancelar
           </Button>
         )}
-        <Button type="submit" variant="primary">
-          {initialValue ? 'Guardar cambios' : 'Agregar guía'}
-        </Button>
       </div>
     </form>
   )

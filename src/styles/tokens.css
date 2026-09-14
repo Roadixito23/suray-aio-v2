@@ -1,24 +1,100 @@
 :root {
-  --color-bg: #f4f1ea;
-  --color-surface: #fffdf7;
-  --color-surface-alt: #eef1e9;
-  --color-text: #1f2a24;
-  --color-text-muted: #536158;
-  --color-border: rgba(31, 42, 36, 0.12);
-  --color-accent: #c96d4b;
-  --color-accent-soft: #dae7cc;
-  --color-danger: #b3402f;
-  --color-danger-soft: #f6e2dd;
+  color-scheme: light;
 
-  --font-serif: Georgia, 'Times New Roman', serif;
-  --font-sans: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  /* Brand */
+  --color-primary: #b3521f;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #ffdbc4;
+  --color-on-primary-container: #3a1500;
 
-  --radius-sm: 4px;
-  --radius-md: 8px;
+  --color-secondary: #5c6146;
+  --color-secondary-container: #dfe6c4;
+  --color-on-secondary-container: #1a1e08;
+
+  --color-error: #ba1b1b;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad4;
+  --color-on-error-container: #410001;
+
+  /* Surfaces */
+  --color-bg: #fff8f4;
+  --color-surface: #fffbf9;
+  --color-surface-container-low: #fef1e8;
+  --color-surface-container: #f8ebe0;
+  --color-surface-container-high: #f2e5da;
+  --color-surface-container-highest: #ecdfd4;
+
+  --color-text: #241a12;
+  --color-text-muted: #5c5049;
+  --color-border: rgba(36, 26, 18, 0.16);
+  --color-border-strong: rgba(36, 26, 18, 0.28);
+
+  /* Legacy aliases still referenced across the app */
+  --color-surface-alt: var(--color-surface-container-low);
+  --color-accent: var(--color-primary);
+  --color-accent-soft: var(--color-secondary-container);
+  --color-danger: var(--color-error);
+  --color-danger-soft: var(--color-error-container);
+
+  --font-sans:
+    'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-serif: var(--font-sans);
+  --font-display: var(--font-sans);
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+
   --space-1: 0.5rem;
   --space-2: 1rem;
   --space-3: 1.5rem;
   --space-4: 2rem;
 
-  --shadow-card: 8px 8px 0 rgba(31, 42, 36, 0.08);
+  --elevation-1: 0 1px 2px rgba(36, 26, 18, 0.14), 0 1px 4px rgba(36, 26, 18, 0.08);
+  --elevation-2: 0 2px 4px rgba(36, 26, 18, 0.12), 0 4px 10px rgba(36, 26, 18, 0.1);
+  --elevation-3: 0 4px 10px rgba(36, 26, 18, 0.14), 0 10px 22px rgba(36, 26, 18, 0.12);
+  --shadow-card: var(--elevation-1);
+
+  --app-max-width: 560px;
+  --appbar-height: 64px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  --motion-fast: 120ms cubic-bezier(0.2, 0, 0, 1);
+  --motion-medium: 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --color-primary: #ffb787;
+    --color-on-primary: #5c2100;
+    --color-primary-container: #833100;
+    --color-on-primary-container: #ffdbc4;
+
+    --color-secondary: #c3c9a4;
+    --color-secondary-container: #444a2e;
+    --color-on-secondary-container: #dfe6c4;
+
+    --color-error: #ffb4a9;
+    --color-on-error: #680003;
+    --color-error-container: #930006;
+    --color-on-error-container: #ffdad4;
+
+    --color-bg: #18120d;
+    --color-surface: #1e1710;
+    --color-surface-container-low: #221a13;
+    --color-surface-container: #271e16;
+    --color-surface-container-high: #32281e;
+    --color-surface-container-highest: #3d3228;
+
+    --color-text: #f1e0d4;
+    --color-text-muted: #cbb8a9;
+    --color-border: rgba(241, 224, 212, 0.16);
+    --color-border-strong: rgba(241, 224, 212, 0.28);
+  }
 }

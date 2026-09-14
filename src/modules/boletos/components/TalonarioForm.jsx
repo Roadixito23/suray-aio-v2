@@ -60,14 +60,14 @@ function TalonarioForm({ initialValue, onSubmit, onCancel }) {
       />
       <p className={styles.preview}>Valor total: {formatCurrency(valorTotal)}</p>
       <div className={styles.actions}>
+        <Button type="submit" variant="primary" fullWidth>
+          {initialValue ? 'Guardar cambios' : 'Agregar talonario'}
+        </Button>
         {onCancel && (
-          <Button type="button" variant="secondary" onClick={onCancel}>
+          <Button type="button" variant="text" fullWidth onClick={onCancel}>
             Cancelar
           </Button>
         )}
-        <Button type="submit" variant="primary">
-          {initialValue ? 'Guardar cambios' : 'Agregar talonario'}
-        </Button>
       </div>
     </form>
   )

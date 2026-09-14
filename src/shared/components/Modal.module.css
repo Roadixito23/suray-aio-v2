@@ -1,22 +1,85 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(31, 42, 36, 0.45);
-  display: grid;
+  background: rgba(20, 14, 9, 0.5);
+  display: flex;
+  z-index: 100;
+  animation: fadeIn var(--motion-medium) ease;
+}
+
+.overlay.dialogOverlay {
   place-items: center;
   padding: var(--space-2);
-  z-index: 100;
+}
+
+.overlay.sheetOverlay {
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .dialog {
-  width: min(100%, 480px);
-  max-height: 90vh;
-  overflow-y: auto;
+  width: 100%;
   background: var(--color-surface);
-  border-radius: var(--radius-md);
-  border-top: 4px solid var(--color-accent);
-  box-shadow: var(--shadow-card);
+  color: var(--color-text);
+}
+
+.sheet {
+  max-width: var(--app-max-width);
+  max-height: 88vh;
+  overflow-y: auto;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 0.6rem var(--space-3) calc(var(--space-3) + var(--safe-bottom));
+  box-shadow: var(--elevation-3);
+  animation: slideUp var(--motion-medium) ease;
+}
+
+.dialogVariant {
+  max-width: 420px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: var(--radius-lg);
   padding: var(--space-3);
+  box-shadow: var(--elevation-3);
+  animation: popIn var(--motion-medium) ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.grabber {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+  margin: 0.5rem auto var(--space-2);
 }
 
 .header {
@@ -27,12 +90,19 @@
 }
 
 .title {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
 .closeButton {
-  background: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-surface-container);
   border: none;
+  border-radius: var(--radius-full);
   font-size: 1.2rem;
   cursor: pointer;
   color: var(--color-text-muted);

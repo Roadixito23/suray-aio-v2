@@ -5,31 +5,56 @@
 }
 
 .label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--color-text-muted);
+  padding-inline: 0.2rem;
 }
 
 .input {
   font-family: var(--font-sans);
-  font-size: 0.95rem;
-  padding: 0.5rem 0.6rem;
+  font-size: 1rem;
+  min-height: 48px;
+  padding: 0.65rem 0.9rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  background: var(--color-surface-container-low);
   color: var(--color-text);
+  transition:
+    border-color var(--motion-fast),
+    background-color var(--motion-fast);
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .input:focus {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 1px;
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+  box-shadow: 0 0 0 3px var(--color-primary-container);
+}
+
+select.input {
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-text-muted) 50%),
+    linear-gradient(135deg, var(--color-text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 22px,
+    calc(100% - 13px) 22px;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2.2rem;
 }
 
 .invalid {
-  border-color: var(--color-danger);
+  border-color: var(--color-error);
+  background: var(--color-error-container);
 }
 
 .error {
   font-size: 0.78rem;
-  color: var(--color-danger);
+  color: var(--color-error);
+  padding-inline: 0.2rem;
 }

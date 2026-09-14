@@ -8,35 +8,38 @@ function VoucherTable({ vouchers, onEdit, onDelete }) {
   }
 
   return (
-    <table className={styles.table}>
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th className={styles.numeric}>Monto</th>
-          <th>Nota</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {vouchers.map((voucher) => (
-          <tr key={voucher.id}>
-            <td>{formatDateDisplay(voucher.fecha)}</td>
-            <td className={styles.numeric}>{formatCurrency(voucher.monto)}</td>
-            <td>{voucher.nota}</td>
-            <td>
-              <div className={styles.actions}>
-                <button className={styles.iconButton} onClick={() => onEdit(voucher)}>
-                  Editar
-                </button>
-                <button className={styles.iconButton} onClick={() => onDelete(voucher.id)}>
-                  Eliminar
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <ul className={styles.list}>
+      {vouchers.map((voucher) => (
+        <li key={voucher.id} className={styles.item}>
+          <div className={styles.info}>
+            <p className={styles.date}>{formatDateDisplay(voucher.fecha)}</p>
+            <p className={styles.title}>Voucher</p>
+            {voucher.nota && <p className={styles.meta}>{voucher.nota}</p>}
+          </div>
+          <div className={styles.side}>
+            <span className={styles.amount}>{formatCurrency(voucher.monto)}</span>
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.iconButton}
+                aria-label="Editar"
+                onClick={() => onEdit(voucher)}
+              >
+                ✎
+              </button>
+              <button
+                type="button"
+                className={`${styles.iconButton} ${styles.deleteButton}`}
+                aria-label="Eliminar"
+                onClick={() => onDelete(voucher.id)}
+              >
+                🗑
+              </button>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
   )
 }
 

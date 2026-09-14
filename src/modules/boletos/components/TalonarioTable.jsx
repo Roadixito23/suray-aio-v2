@@ -10,37 +10,40 @@ function TalonarioTable({ talonarios, onEdit, onDelete }) {
   }
 
   return (
-    <table className={styles.table}>
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Tipo</th>
-          <th className={styles.numeric}>Cantidad</th>
-          <th className={styles.numeric}>Valor total</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {talonarios.map((talonario) => (
-          <tr key={talonario.id}>
-            <td>{formatDateDisplay(talonario.fecha)}</td>
-            <td>{getTalonarioType(talonario.tipoId)?.label ?? talonario.tipoId}</td>
-            <td className={styles.numeric}>{talonario.cantidad}</td>
-            <td className={styles.numeric}>{formatCurrency(valorTotalTalonario(talonario))}</td>
-            <td>
-              <div className={styles.actions}>
-                <button className={styles.iconButton} onClick={() => onEdit(talonario)}>
-                  Editar
-                </button>
-                <button className={styles.iconButton} onClick={() => onDelete(talonario.id)}>
-                  Eliminar
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <ul className={styles.list}>
+      {talonarios.map((talonario) => (
+        <li key={talonario.id} className={styles.item}>
+          <div className={styles.info}>
+            <p className={styles.date}>{formatDateDisplay(talonario.fecha)}</p>
+            <p className={styles.title}>
+              {getTalonarioType(talonario.tipoId)?.label ?? talonario.tipoId}
+            </p>
+            <p className={styles.meta}>{talonario.cantidad} talonario(s)</p>
+          </div>
+          <div className={styles.side}>
+            <span className={styles.amount}>{formatCurrency(valorTotalTalonario(talonario))}</span>
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.iconButton}
+                aria-label="Editar"
+                onClick={() => onEdit(talonario)}
+              >
+                ✎
+              </button>
+              <button
+                type="button"
+                className={`${styles.iconButton} ${styles.deleteButton}`}
+                aria-label="Eliminar"
+                onClick={() => onDelete(talonario.id)}
+              >
+                🗑
+              </button>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
   )
 }
 

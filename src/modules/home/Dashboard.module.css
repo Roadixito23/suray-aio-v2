@@ -1,28 +1,51 @@
 .page {
   min-height: 100vh;
-  padding: clamp(2rem, 6vw, 4rem);
-  background:
-    radial-gradient(circle at 18% 20%, rgba(218, 231, 204, 0.85), transparent 32%),
-    linear-gradient(135deg, #f4f1ea 0%, #e8ede3 100%);
+  min-height: 100dvh;
+  background: var(--color-bg);
+}
+
+.hero {
+  padding: calc(var(--safe-top) + var(--space-4)) var(--space-3) var(--space-4);
+  background: linear-gradient(160deg, var(--color-primary-container) 0%, var(--color-bg) 78%);
+}
+
+.heroInner {
+  max-width: var(--app-max-width);
+  margin: 0 auto;
 }
 
 .eyebrow {
-  margin: 0 0 0.4rem;
-  color: var(--color-accent);
-  font-family: var(--font-sans);
+  margin: 0 0 0.3rem;
+  color: var(--color-on-primary-container);
   font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  opacity: 0.75;
 }
 
 .title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  margin-bottom: var(--space-4);
+  font-size: clamp(1.9rem, 7vw, 2.4rem);
+  color: var(--color-on-primary-container);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--space-3);
+.content {
+  max-width: var(--app-max-width);
+  margin: -1.5rem auto 0;
+  padding: 0 var(--space-2) calc(var(--space-4) + var(--safe-bottom));
+}
+
+.sectionLabel {
+  padding: 0 var(--space-1) 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }

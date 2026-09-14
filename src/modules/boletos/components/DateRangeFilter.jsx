@@ -6,12 +6,14 @@ function DateRangeFilter({ value, onChange }) {
   return (
     <div className={styles.filter}>
       <FormField
+        className={styles.field}
         label="Desde"
         type="date"
         value={value.desde}
         onChange={(e) => onChange({ ...value, desde: e.target.value })}
       />
       <FormField
+        className={styles.field}
         label="Hasta"
         type="date"
         value={value.hasta}
@@ -19,7 +21,8 @@ function DateRangeFilter({ value, onChange }) {
       />
       <Button
         type="button"
-        variant="secondary"
+        variant="text"
+        className={styles.reset}
         onClick={() => onChange({ desde: '', hasta: '' })}
       >
         Ver todo

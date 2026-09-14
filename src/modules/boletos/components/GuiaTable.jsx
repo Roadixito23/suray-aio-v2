@@ -8,37 +8,38 @@ function GuiaTable({ guias, onEdit, onDelete }) {
   }
 
   return (
-    <table className={styles.table}>
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Chofer</th>
-          <th>Bus</th>
-          <th className={styles.numeric}>Monto</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {guias.map((guia) => (
-          <tr key={guia.id}>
-            <td>{formatDateDisplay(guia.fecha)}</td>
-            <td>{guia.chofer}</td>
-            <td>{guia.bus}</td>
-            <td className={styles.numeric}>{formatCurrency(guia.monto)}</td>
-            <td>
-              <div className={styles.actions}>
-                <button className={styles.iconButton} onClick={() => onEdit(guia)}>
-                  Editar
-                </button>
-                <button className={styles.iconButton} onClick={() => onDelete(guia.id)}>
-                  Eliminar
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <ul className={styles.list}>
+      {guias.map((guia) => (
+        <li key={guia.id} className={styles.item}>
+          <div className={styles.info}>
+            <p className={styles.date}>{formatDateDisplay(guia.fecha)}</p>
+            <p className={styles.title}>{guia.chofer}</p>
+            <p className={styles.meta}>Bus {guia.bus}</p>
+          </div>
+          <div className={styles.side}>
+            <span className={styles.amount}>{formatCurrency(guia.monto)}</span>
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.iconButton}
+                aria-label="Editar"
+                onClick={() => onEdit(guia)}
+              >
+                ✎
+              </button>
+              <button
+                type="button"
+                className={`${styles.iconButton} ${styles.deleteButton}`}
+                aria-label="Eliminar"
+                onClick={() => onDelete(guia.id)}
+              >
+                🗑
+              </button>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
   )
 }
 

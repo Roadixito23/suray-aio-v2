@@ -1,0 +1,28 @@
+.page {
+  min-height: 100vh;
+  padding: clamp(2rem, 6vw, 4rem);
+  background:
+    radial-gradient(circle at 18% 20%, rgba(218, 231, 204, 0.85), transparent 32%),
+    linear-gradient(135deg, #f4f1ea 0%, #e8ede3 100%);
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--color-accent);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: var(--space-4);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-3);
+}

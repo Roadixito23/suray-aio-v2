@@ -12,10 +12,12 @@ export function useVouchers() {
       fecha,
       monto: Number(monto),
       nota,
+      sobreId: null,
       createdAt: now,
       updatedAt: now,
     }
     setVouchers((prev) => [...prev, voucher])
+    return voucher
   }
 
   function updateVoucher(id, { fecha, monto, nota = '' }) {
@@ -33,5 +35,14 @@ export function useVouchers() {
     setVouchers((prev) => prev.filter((voucher) => voucher.id !== id))
   }
 
-  return { vouchers, addVoucher, updateVoucher, removeVoucher }
+  function marcarSobre(ids, sobreId) {
+    const now = new Date().toISOString()
+    setVouchers((prev) =>
+      prev.map((voucher) =>
+        ids.includes(voucher.id) ? { ...voucher, sobreId, updatedAt: now } : voucher
+      )
+    )
+  }
+
+  return { vouchers, addVoucher, updateVoucher, removeVoucher, marcarSobre }
 }

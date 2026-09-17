@@ -33,8 +33,10 @@ const TYPE_CONFIG = {
 function BoletosCalculadora({ onBack }) {
   const { talonarios: talonariosCuaderno, setEstado: setEstadoCuaderno } = useCuadernoTalonarios()
   const { sobres, crearSobre, marcarTimbrado, eliminarSobre } = useSobres()
-  const { vouchers, addVoucher, updateVoucher, removeVoucher } = useVouchers()
-  const { guias, addGuia, updateGuia, removeGuia } = useGuiasCombustible()
+  const { vouchers, addVoucher, updateVoucher, removeVoucher, marcarSobre: marcarSobreVoucher } =
+    useVouchers()
+  const { guias, addGuia, updateGuia, removeGuia, marcarSobre: marcarSobreGuia } =
+    useGuiasCombustible()
 
   const [activeTab, setActiveTab] = useState('sobre')
   const [creating, setCreating] = useState(false)
@@ -47,6 +49,8 @@ function BoletosCalculadora({ onBack }) {
     () => talonariosCuaderno.filter((t) => t.estado === 'por-rendir'),
     [talonariosCuaderno]
   )
+  const vouchersPendientes = useMemo(() => vouchers.filter((v) => !v.sobreId), [vouchers])
+  const guiasPendientes = useMemo(() => guias.filter((g) => !g.sobreId), [guias])
 
   function handleCreate(data) {
     if (activeTab === 'voucher') addVoucher(data)
@@ -66,9 +70,15 @@ function BoletosCalculadora({ onBack }) {
     setDeleting(null)
   }
 
-  function handleCerrarSobre(talonariosSeleccionados) {
-    crearSobre(talonariosSeleccionados)
-    talonariosSeleccionados.forEach((t) => setEstadoCuaderno(t.id, 'en-sobre'))
+  function handleCerrarSobre({ talonarios, vouchers: vouchersSeleccionados, guias: guiasSeleccionadas }) {
+    const sobre = crearSobre({ talonarios, vouchers: vouchersSeleccionados, guias: guiasSeleccionadas })
+    talonarios.forEach((t) => setEstadoCuaderno(t.id, 'en-sobre'))
+    if (vouchersSeleccionados.length > 0) {
+      marcarSobreVoucher(vouchersSeleccionados.map((v) => v.id), sobre.id)
+    }
+    if (guiasSeleccionadas.length > 0) {
+      marcarSobreGuia(guiasSeleccionadas.map((g) => g.id), sobre.id)
+    }
     setCreatingSobre(false)
   }
 
@@ -76,14 +86,20 @@ function BoletosCalculadora({ onBack }) {
     const sobre = sobres.find((s) => s.id === sobreId)
     if (!sobre) return
     marcarTimbrado(sobreId)
-    sobre.detalle.forEach((d) => setEstadoCuaderno(d.talonarioId, 'timbrado'))
+    const detalleTalonarios = sobre.detalleTalonarios ?? sobre.detalle ?? []
+    detalleTalonarios.forEach((d) => setEstadoCuaderno(d.talonarioId, 'timbrado'))
   }
 
   function confirmDeleteSobre() {
     const sobre = sobres.find((s) => s.id === deletingSobreId)
     if (sobre) {
       eliminarSobre(sobre.id)
-      sobre.detalle.forEach((d) => setEstadoCuaderno(d.talonarioId, 'por-rendir'))
+      const detalleTalonarios = sobre.detalleTalonarios ?? sobre.detalle ?? []
+      detalleTalonarios.forEach((d) => setEstadoCuaderno(d.talonarioId, 'por-rendir'))
+      const voucherIds = (sobre.detalleVouchers ?? []).map((d) => d.voucherId)
+      if (voucherIds.length > 0) marcarSobreVoucher(voucherIds, null)
+      const guiaIds = (sobre.detalleGuias ?? []).map((d) => d.guiaId)
+      if (guiaIds.length > 0) marcarSobreGuia(guiaIds, null)
     }
     setDeletingSobreId(null)
   }
@@ -149,7 +165,11 @@ function BoletosCalculadora({ onBack }) {
       {creatingSobre && (
         <Modal title="Nuevo sobre" onClose={() => setCreatingSobre(false)}>
           <NuevoSobreForm
-            talonarios={talonariosPorRendir}
+            talonariosDisponibles={talonariosPorRendir}
+            vouchersDisponibles={vouchersPendientes}
+            guiasDisponibles={guiasPendientes}
+            onAddVoucher={addVoucher}
+            onAddGuia={addGuia}
             onSubmit={handleCerrarSobre}
             onCancel={() => setCreatingSobre(false)}
           />

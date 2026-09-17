@@ -38,6 +38,22 @@
   margin-top: 0.15rem;
 }
 
+.estadoBadge {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+}
+
+.estadoEnSobre {
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+}
+
 .side {
   flex: none;
   display: flex;

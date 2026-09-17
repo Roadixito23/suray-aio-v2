@@ -13,10 +13,12 @@ export function useGuiasCombustible() {
       bus: bus.trim().toUpperCase(),
       fecha,
       monto: Number(monto),
+      sobreId: null,
       createdAt: now,
       updatedAt: now,
     }
     setGuias((prev) => [...prev, guia])
+    return guia
   }
 
   function updateGuia(id, { chofer, bus, fecha, monto }) {
@@ -41,5 +43,12 @@ export function useGuiasCombustible() {
     setGuias((prev) => prev.filter((guia) => guia.id !== id))
   }
 
-  return { guias, addGuia, updateGuia, removeGuia }
+  function marcarSobre(ids, sobreId) {
+    const now = new Date().toISOString()
+    setGuias((prev) =>
+      prev.map((guia) => (ids.includes(guia.id) ? { ...guia, sobreId, updatedAt: now } : guia))
+    )
+  }
+
+  return { guias, addGuia, updateGuia, removeGuia, marcarSobre }
 }

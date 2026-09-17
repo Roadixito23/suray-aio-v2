@@ -15,6 +15,9 @@ function GuiaTable({ guias, onEdit, onDelete }) {
             <p className={styles.date}>{formatDateDisplay(guia.fecha)}</p>
             <p className={styles.title}>{guia.chofer}</p>
             <p className={styles.meta}>Bus {guia.bus}</p>
+            <span className={`${styles.estadoBadge} ${guia.sobreId ? styles.estadoEnSobre : ''}`}>
+              {guia.sobreId ? 'En sobre' : 'Pendiente'}
+            </span>
           </div>
           <div className={styles.side}>
             <span className={styles.amount}>{formatCurrency(guia.monto)}</span>

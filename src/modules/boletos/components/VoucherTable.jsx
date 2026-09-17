@@ -15,6 +15,9 @@ function VoucherTable({ vouchers, onEdit, onDelete }) {
             <p className={styles.date}>{formatDateDisplay(voucher.fecha)}</p>
             <p className={styles.title}>Voucher</p>
             {voucher.nota && <p className={styles.meta}>{voucher.nota}</p>}
+            <span className={`${styles.estadoBadge} ${voucher.sobreId ? styles.estadoEnSobre : ''}`}>
+              {voucher.sobreId ? 'En sobre' : 'Pendiente'}
+            </span>
           </div>
           <div className={styles.side}>
             <span className={styles.amount}>{formatCurrency(voucher.monto)}</span>

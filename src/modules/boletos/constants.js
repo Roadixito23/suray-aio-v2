@@ -1,5 +1,5 @@
 export const STORAGE_KEYS = {
-  talonarios: 'suray:boletos:talonarios',
+  sobres: 'suray:boletos:sobres',
   vouchers: 'suray:boletos:vouchers',
   guias: 'suray:boletos:guias',
 }

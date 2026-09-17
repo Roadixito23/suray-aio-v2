@@ -18,10 +18,3 @@ export function formatDateDisplay(isoDate) {
   const [year, month, day] = isoDate.split('-')
   return `${day}/${month}/${year}`
 }
-
-export function isWithinRange(isoDate, { desde, hasta } = {}) {
-  if (!isValidISODate(isoDate)) return false
-  if (desde && isoDate < desde) return false
-  if (hasta && isoDate > hasta) return false
-  return true
-}

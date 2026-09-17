@@ -11,13 +11,6 @@
   padding: var(--space-2) var(--space-2) 0;
 }
 
-.summarySection {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
-}
-
 .tabs {
   position: sticky;
   top: var(--appbar-height);
@@ -28,10 +21,18 @@
   margin-bottom: var(--space-2);
   background: var(--color-surface-container-low);
   border-radius: var(--radius-full);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,6 +49,12 @@
   cursor: pointer;
   transition: background-color var(--motion-fast), color var(--motion-fast);
   white-space: nowrap;
+}
+
+@media (min-width: 480px) {
+  .tab {
+    flex: 1;
+  }
 }
 
 .tabActive {

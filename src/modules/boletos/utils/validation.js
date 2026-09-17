@@ -1,5 +1,5 @@
 import { isValidISODate } from '../../../shared/utils/date.js'
-import { getTalonarioType, BUS_NAME_MAX_LENGTH } from '../constants.js'
+import { BUS_NAME_MAX_LENGTH } from '../constants.js'
 
 function validate(checks) {
   const errors = {}
@@ -7,14 +7,6 @@ function validate(checks) {
     if (!condition) errors[field] = message
   })
   return { valid: Object.keys(errors).length === 0, errors }
-}
-
-export function validarTalonario({ tipoId, fecha, cantidad }) {
-  return validate([
-    ['tipoId', Boolean(getTalonarioType(tipoId)), 'Seleccioná un tipo de talonario válido'],
-    ['fecha', isValidISODate(fecha), 'Ingresá una fecha válida'],
-    ['cantidad', Number.isInteger(Number(cantidad)) && Number(cantidad) >= 1, 'La cantidad debe ser un entero mayor o igual a 1'],
-  ])
 }
 
 export function validarVoucher({ fecha, monto }) {

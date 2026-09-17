@@ -3,14 +3,12 @@ import AppBar from '../../shared/components/AppBar.jsx'
 import Fab from '../../shared/components/Fab.jsx'
 import Modal from '../../shared/components/Modal.jsx'
 import ConfirmDialog from '../../shared/components/ConfirmDialog.jsx'
-import { useTalonarios } from './hooks/useTalonarios.js'
+import { useCuadernoTalonarios } from '../cuaderno/hooks/useCuadernoTalonarios.js'
+import { useSobres } from './hooks/useSobres.js'
 import { useVouchers } from './hooks/useVouchers.js'
 import { useGuiasCombustible } from './hooks/useGuiasCombustible.js'
-import { calcularResumenPorRango } from './utils/calculos.js'
-import DateRangeFilter from './components/DateRangeFilter.jsx'
-import ResumenPanel from './components/ResumenPanel.jsx'
-import TalonarioForm from './components/TalonarioForm.jsx'
-import TalonarioTable from './components/TalonarioTable.jsx'
+import NuevoSobreForm from './components/NuevoSobreForm.jsx'
+import SobreTable from './components/SobreTable.jsx'
 import VoucherForm from './components/VoucherForm.jsx'
 import VoucherTable from './components/VoucherTable.jsx'
 import GuiaForm from './components/GuiaForm.jsx'
@@ -18,13 +16,12 @@ import GuiaTable from './components/GuiaTable.jsx'
 import styles from './BoletosCalculadora.module.css'
 
 const TABS = [
-  { id: 'talonario', label: 'Talonarios', singular: 'talonario', icon: '🎟️' },
+  { id: 'sobre', label: 'Sobres', singular: 'sobre', icon: '✉️' },
   { id: 'voucher', label: 'Vouchers', singular: 'voucher', icon: '🧾' },
   { id: 'guia', label: 'Guías', singular: 'guía', icon: '⛽' },
 ]
 
 const TYPE_CONFIG = {
-  talonario: { addTitle: 'Nuevo talonario', editTitle: 'Editar talonario', Form: TalonarioForm },
   voucher: { addTitle: 'Nuevo voucher', editTitle: 'Editar voucher', Form: VoucherForm },
   guia: {
     addTitle: 'Nueva guía de combustible',
@@ -34,40 +31,61 @@ const TYPE_CONFIG = {
 }
 
 function BoletosCalculadora({ onBack }) {
-  const { talonarios, addTalonario, updateTalonario, removeTalonario } = useTalonarios()
+  const { talonarios: talonariosCuaderno, setEstado: setEstadoCuaderno } = useCuadernoTalonarios()
+  const { sobres, crearSobre, marcarTimbrado, eliminarSobre } = useSobres()
   const { vouchers, addVoucher, updateVoucher, removeVoucher } = useVouchers()
   const { guias, addGuia, updateGuia, removeGuia } = useGuiasCombustible()
 
-  const [activeTab, setActiveTab] = useState('talonario')
-  const [rango, setRango] = useState({ desde: '', hasta: '' })
+  const [activeTab, setActiveTab] = useState('sobre')
   const [creating, setCreating] = useState(false)
+  const [creatingSobre, setCreatingSobre] = useState(false)
   const [editing, setEditing] = useState(null) // { type, item }
   const [deleting, setDeleting] = useState(null) // { type, id }
+  const [deletingSobreId, setDeletingSobreId] = useState(null)
 
-  const resumen = useMemo(
-    () => calcularResumenPorRango(talonarios, vouchers, guias, rango),
-    [talonarios, vouchers, guias, rango]
+  const talonariosPorRendir = useMemo(
+    () => talonariosCuaderno.filter((t) => t.estado === 'por-rendir'),
+    [talonariosCuaderno]
   )
 
   function handleCreate(data) {
-    if (activeTab === 'talonario') addTalonario(data)
     if (activeTab === 'voucher') addVoucher(data)
     if (activeTab === 'guia') addGuia(data)
     setCreating(false)
   }
 
   function handleUpdate(data) {
-    if (editing.type === 'talonario') updateTalonario(editing.item.id, data)
     if (editing.type === 'voucher') updateVoucher(editing.item.id, data)
     if (editing.type === 'guia') updateGuia(editing.item.id, data)
     setEditing(null)
   }
 
   function confirmDelete() {
-    if (deleting.type === 'talonario') removeTalonario(deleting.id)
     if (deleting.type === 'voucher') removeVoucher(deleting.id)
     if (deleting.type === 'guia') removeGuia(deleting.id)
     setDeleting(null)
+  }
+
+  function handleCerrarSobre(talonariosSeleccionados) {
+    crearSobre(talonariosSeleccionados)
+    talonariosSeleccionados.forEach((t) => setEstadoCuaderno(t.id, 'en-sobre'))
+    setCreatingSobre(false)
+  }
+
+  function handleMarcarTimbrado(sobreId) {
+    const sobre = sobres.find((s) => s.id === sobreId)
+    if (!sobre) return
+    marcarTimbrado(sobreId)
+    sobre.detalle.forEach((d) => setEstadoCuaderno(d.talonarioId, 'timbrado'))
+  }
+
+  function confirmDeleteSobre() {
+    const sobre = sobres.find((s) => s.id === deletingSobreId)
+    if (sobre) {
+      eliminarSobre(sobre.id)
+      sobre.detalle.forEach((d) => setEstadoCuaderno(d.talonarioId, 'por-rendir'))
+    }
+    setDeletingSobreId(null)
   }
 
   const activeConfig = TYPE_CONFIG[activeTab]
@@ -78,11 +96,6 @@ function BoletosCalculadora({ onBack }) {
       <AppBar title="Boletos" subtitle="Cierre de caja diario" onBack={onBack} />
 
       <div className={styles.content}>
-        <section className={styles.summarySection}>
-          <DateRangeFilter value={rango} onChange={setRango} />
-          <ResumenPanel resumen={resumen} />
-        </section>
-
         <nav className={styles.tabs} role="tablist" aria-label="Tipo de registro">
           {TABS.map((tab) => (
             <button
@@ -100,11 +113,11 @@ function BoletosCalculadora({ onBack }) {
         </nav>
 
         <section className={styles.listSection}>
-          {activeTab === 'talonario' && (
-            <TalonarioTable
-              talonarios={talonarios}
-              onEdit={(item) => setEditing({ type: 'talonario', item })}
-              onDelete={(id) => setDeleting({ type: 'talonario', id })}
+          {activeTab === 'sobre' && (
+            <SobreTable
+              sobres={sobres}
+              onMarcarTimbrado={handleMarcarTimbrado}
+              onDelete={setDeletingSobreId}
             />
           )}
           {activeTab === 'voucher' && (
@@ -124,12 +137,26 @@ function BoletosCalculadora({ onBack }) {
         </section>
       </div>
 
-      <Fab
-        label={`Agregar ${TABS.find((t) => t.id === activeTab).singular}`}
-        onClick={() => setCreating(true)}
-      />
+      {activeTab === 'sobre' ? (
+        <Fab label="Nuevo sobre" onClick={() => setCreatingSobre(true)} />
+      ) : (
+        <Fab
+          label={`Agregar ${TABS.find((t) => t.id === activeTab).singular}`}
+          onClick={() => setCreating(true)}
+        />
+      )}
 
-      {creating && (
+      {creatingSobre && (
+        <Modal title="Nuevo sobre" onClose={() => setCreatingSobre(false)}>
+          <NuevoSobreForm
+            talonarios={talonariosPorRendir}
+            onSubmit={handleCerrarSobre}
+            onCancel={() => setCreatingSobre(false)}
+          />
+        </Modal>
+      )}
+
+      {creating && activeConfig && (
         <Modal title={activeConfig.addTitle} onClose={() => setCreating(false)}>
           <activeConfig.Form onSubmit={handleCreate} onCancel={() => setCreating(false)} />
         </Modal>
@@ -151,6 +178,15 @@ function BoletosCalculadora({ onBack }) {
           message="¿Seguro que querés eliminar este registro? Esta acción no se puede deshacer."
           onConfirm={confirmDelete}
           onCancel={() => setDeleting(null)}
+        />
+      )}
+
+      {deletingSobreId && (
+        <ConfirmDialog
+          title="Eliminar sobre"
+          message="Los talonarios de este sobre volverán a estar Por Rendir en el Cuaderno. ¿Continuar?"
+          onConfirm={confirmDeleteSobre}
+          onCancel={() => setDeletingSobreId(null)}
         />
       )}
     </div>

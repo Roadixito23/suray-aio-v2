@@ -23,10 +23,12 @@ function SobreTable({ sobres, onMarcarTimbrado, onDelete }) {
         const detalleTalonarios = sobre.detalleTalonarios ?? sobre.detalle ?? []
         const detalleVouchers = sobre.detalleVouchers ?? []
         const detalleGuias = sobre.detalleGuias ?? []
+        const detalleGastos = sobre.detalleGastos ?? []
         const totalTalonarios = sobre.totalTalonarios ?? sobre.valorTotal ?? 0
         const totalVouchers = sobre.totalVouchers ?? 0
         const totalGuias = sobre.totalGuias ?? 0
-        const efectivo = sobre.efectivo ?? totalTalonarios - totalVouchers - totalGuias
+        const totalGastos = sobre.totalGastos ?? 0
+        const efectivo = sobre.efectivo ?? totalTalonarios - totalVouchers - totalGuias - totalGastos
 
         return (
           <li key={sobre.id} className={styles.item}>
@@ -71,6 +73,13 @@ function SobreTable({ sobres, onMarcarTimbrado, onDelete }) {
                   <span>− {formatCurrency(d.monto)}</span>
                 </li>
               ))}
+              {detalleGastos.map((d) => (
+                <li key={d.gastoId} className={styles.detalleItem}>
+                  <span>{d.categoria}</span>
+                  <span>{formatDateDisplay(d.fecha)}</span>
+                  <span>− {formatCurrency(d.monto)}</span>
+                </li>
+              ))}
             </ul>
 
             <div className={styles.resumen}>
@@ -85,6 +94,10 @@ function SobreTable({ sobres, onMarcarTimbrado, onDelete }) {
               <div className={styles.resumenRow}>
                 <span>Guías</span>
                 <span>− {formatCurrency(totalGuias)}</span>
+              </div>
+              <div className={styles.resumenRow}>
+                <span>Otros gastos</span>
+                <span>− {formatCurrency(totalGastos)}</span>
               </div>
               <div className={`${styles.resumenRow} ${styles.resumenTotal} ${efectivo < 0 ? styles.negativo : ''}`}>
                 <span>Efectivo</span>

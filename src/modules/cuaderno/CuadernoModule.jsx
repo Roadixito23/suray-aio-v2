@@ -16,15 +16,18 @@ function CuadernoModule({ onBack }) {
     useCuadernoTalonarios()
 
   const [filtro, setFiltro] = useState('todos')
+  const [orden, setOrden] = useState('desc') // 'desc' = agregados últimos primero, 'asc' = agregados primero
   const [creating, setCreating] = useState(false)
   const [editing, setEditing] = useState(null)
   const [deleting, setDeleting] = useState(null)
 
   const talonariosFiltrados = useMemo(() => {
-    const ordenados = [...talonarios].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    const ordenados = [...talonarios].sort((a, b) =>
+      orden === 'desc' ? b.createdAt.localeCompare(a.createdAt) : a.createdAt.localeCompare(b.createdAt)
+    )
     if (filtro === 'todos') return ordenados
     return ordenados.filter((t) => t.estado === filtro)
-  }, [talonarios, filtro])
+  }, [talonarios, filtro, orden])
 
   function handleCreate(data) {
     addTalonario(data)
@@ -60,6 +63,17 @@ function CuadernoModule({ onBack }) {
             </button>
           ))}
         </nav>
+
+        <div className={styles.ordenRow}>
+          <button
+            type="button"
+            className={styles.ordenButton}
+            onClick={() => setOrden((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
+          >
+            <span aria-hidden="true">⇅</span>
+            {orden === 'desc' ? 'Agregados últimos primero' : 'Agregados primero'}
+          </button>
+        </div>
 
         <section className={styles.listSection}>
           <CuadernoTalonarioTable

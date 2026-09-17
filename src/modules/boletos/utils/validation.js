@@ -16,6 +16,16 @@ export function validarVoucher({ fecha, monto }) {
   ])
 }
 
+export function validarGasto({ categoria, fecha, monto }) {
+  const categoriaValida = typeof categoria === 'string' && categoria.trim().length > 0
+
+  return validate([
+    ['categoria', categoriaValida, 'Ingresá el tipo de gasto (ej: Factura)'],
+    ['fecha', isValidISODate(fecha), 'Ingresá una fecha válida'],
+    ['monto', Number(monto) > 0, 'El monto debe ser mayor a 0'],
+  ])
+}
+
 export function validarGuia({ chofer, bus, fecha, monto }) {
   const choferValido = typeof chofer === 'string' && chofer.trim().length > 0
   const busValido =

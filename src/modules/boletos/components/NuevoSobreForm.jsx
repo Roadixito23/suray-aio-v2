@@ -1,51 +1,109 @@
 import { useState } from 'react'
 import Button from '../../../shared/components/Button.jsx'
 import { formatCurrency } from '../../../shared/utils/format.js'
+import { formatDateDisplay } from '../../../shared/utils/date.js'
 import { getTalonarioType } from '../constants.js'
 import { formatNumeroBoleto, calcularNumeroFin } from '../../cuaderno/utils/numeracion.js'
 import VoucherForm from './VoucherForm.jsx'
 import GuiaForm from './GuiaForm.jsx'
+import GastoForm from './GastoForm.jsx'
 import styles from './NuevoSobreForm.module.css'
+
+function SeccionSeleccionable({
+  title,
+  items,
+  selectedIds,
+  onToggle,
+  renderItem,
+  emptyText,
+  addLabel,
+  AddForm,
+  onAdded,
+}) {
+  const [adding, setAdding] = useState(false)
+
+  function handleAdded(data) {
+    const created = onAdded(data)
+    onToggle(created.id, true)
+    setAdding(false)
+  }
+
+  return (
+    <div className={styles.section}>
+      <div className={styles.sectionHeader}>
+        <p className={styles.sectionTitle}>{title}</p>
+        {AddForm && !adding && (
+          <button type="button" className={styles.addLink} onClick={() => setAdding(true)}>
+            {addLabel}
+          </button>
+        )}
+      </div>
+      {adding && AddForm && <AddForm onSubmit={handleAdded} onCancel={() => setAdding(false)} />}
+      {items.length === 0 ? (
+        <p className={styles.emptySection}>{emptyText}</p>
+      ) : (
+        <ul className={styles.list}>
+          {items.map((item) => {
+            const info = renderItem(item)
+            return (
+              <li key={item.id} className={styles.item}>
+                <label className={styles.itemLabel}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(item.id)}
+                    onChange={() => onToggle(item.id)}
+                    className={styles.checkbox}
+                  />
+                  <span className={styles.itemInfo}>
+                    <span className={styles.itemTitle}>{info.title}</span>
+                    <span className={styles.itemMeta}>{info.meta}</span>
+                  </span>
+                  <span className={styles.itemAmount}>{info.amount}</span>
+                </label>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
+  )
+}
 
 function NuevoSobreForm({
   talonariosDisponibles,
   vouchersDisponibles,
   guiasDisponibles,
+  gastosDisponibles,
   onAddVoucher,
   onAddGuia,
+  onAddGasto,
   onSubmit,
   onCancel,
 }) {
   const [talonarioIds, setTalonarioIds] = useState([])
   const [voucherIds, setVoucherIds] = useState([])
   const [guiaIds, setGuiaIds] = useState([])
-  const [addingVoucher, setAddingVoucher] = useState(false)
-  const [addingGuia, setAddingGuia] = useState(false)
+  const [gastoIds, setGastoIds] = useState([])
 
-  function toggle(setIds, id) {
-    setIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  function makeToggle(setIds) {
+    return (id, forceSelect = false) => {
+      setIds((prev) => {
+        if (forceSelect) return prev.includes(id) ? prev : [...prev, id]
+        return prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      })
+    }
   }
 
   const talonariosSeleccionados = talonariosDisponibles.filter((t) => talonarioIds.includes(t.id))
   const vouchersSeleccionados = vouchersDisponibles.filter((v) => voucherIds.includes(v.id))
   const guiasSeleccionadas = guiasDisponibles.filter((g) => guiaIds.includes(g.id))
+  const gastosSeleccionados = gastosDisponibles.filter((g) => gastoIds.includes(g.id))
 
   const totalTalonarios = talonariosSeleccionados.reduce((sum, t) => sum + t.valorUnitario, 0)
   const totalVouchers = vouchersSeleccionados.reduce((sum, v) => sum + v.monto, 0)
   const totalGuias = guiasSeleccionadas.reduce((sum, g) => sum + g.monto, 0)
-  const efectivo = totalTalonarios - totalVouchers - totalGuias
-
-  function handleAddVoucher(data) {
-    const voucher = onAddVoucher(data)
-    setVoucherIds((prev) => [...prev, voucher.id])
-    setAddingVoucher(false)
-  }
-
-  function handleAddGuia(data) {
-    const guia = onAddGuia(data)
-    setGuiaIds((prev) => [...prev, guia.id])
-    setAddingGuia(false)
-  }
+  const totalGastos = gastosSeleccionados.reduce((sum, g) => sum + g.monto, 0)
+  const efectivo = totalTalonarios - totalVouchers - totalGuias - totalGastos
 
   function handleCerrarSobre() {
     if (talonariosSeleccionados.length === 0) return
@@ -53,6 +111,7 @@ function NuevoSobreForm({
       talonarios: talonariosSeleccionados,
       vouchers: vouchersSeleccionados,
       guias: guiasSeleccionadas,
+      gastos: gastosSeleccionados,
     })
   }
 
@@ -69,106 +128,70 @@ function NuevoSobreForm({
 
   return (
     <div className={styles.form}>
-      <div className={styles.section}>
-        <p className={styles.sectionTitle}>Talonarios "Por Rendir"</p>
-        <ul className={styles.list}>
-          {talonariosDisponibles.map((t) => {
-            const tipo = getTalonarioType(t.tipoId)
-            const numeroFin = calcularNumeroFin(t.numeroInicio, t.cantidadBoletos)
-            return (
-              <li key={t.id} className={styles.item}>
-                <label className={styles.itemLabel}>
-                  <input
-                    type="checkbox"
-                    checked={talonarioIds.includes(t.id)}
-                    onChange={() => toggle(setTalonarioIds, t.id)}
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.itemInfo}>
-                    <span className={styles.itemTitle}>{tipo?.label ?? t.tipoId}</span>
-                    <span className={styles.itemMeta}>
-                      {formatNumeroBoleto(t.numeroInicio)} — {formatNumeroBoleto(numeroFin)}
-                    </span>
-                  </span>
-                  <span className={styles.itemAmount}>{formatCurrency(t.valorUnitario)}</span>
-                </label>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+      <SeccionSeleccionable
+        title='Talonarios "Por Rendir"'
+        items={talonariosDisponibles}
+        selectedIds={talonarioIds}
+        onToggle={makeToggle(setTalonarioIds)}
+        emptyText="No hay talonarios pendientes."
+        renderItem={(t) => {
+          const tipo = getTalonarioType(t.tipoId)
+          const numeroFin = calcularNumeroFin(t.numeroInicio, t.cantidadBoletos)
+          return {
+            title: tipo?.label ?? t.tipoId,
+            meta: `${formatNumeroBoleto(t.numeroInicio)} — ${formatNumeroBoleto(numeroFin)}`,
+            amount: formatCurrency(t.valorUnitario),
+          }
+        }}
+      />
 
-      <div className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <p className={styles.sectionTitle}>Vouchers</p>
-          {!addingVoucher && (
-            <button type="button" className={styles.addLink} onClick={() => setAddingVoucher(true)}>
-              + Agregar voucher
-            </button>
-          )}
-        </div>
-        {addingVoucher && (
-          <VoucherForm onSubmit={handleAddVoucher} onCancel={() => setAddingVoucher(false)} />
-        )}
-        {vouchersDisponibles.length === 0 ? (
-          <p className={styles.emptySection}>No hay vouchers pendientes.</p>
-        ) : (
-          <ul className={styles.list}>
-            {vouchersDisponibles.map((v) => (
-              <li key={v.id} className={styles.item}>
-                <label className={styles.itemLabel}>
-                  <input
-                    type="checkbox"
-                    checked={voucherIds.includes(v.id)}
-                    onChange={() => toggle(setVoucherIds, v.id)}
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.itemInfo}>
-                    <span className={styles.itemTitle}>{v.nota || 'Voucher'}</span>
-                    <span className={styles.itemMeta}>{v.fecha}</span>
-                  </span>
-                  <span className={styles.itemAmount}>{formatCurrency(v.monto)}</span>
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <SeccionSeleccionable
+        title="Vouchers"
+        items={vouchersDisponibles}
+        selectedIds={voucherIds}
+        onToggle={makeToggle(setVoucherIds)}
+        emptyText="No hay vouchers pendientes."
+        addLabel="+ Agregar voucher"
+        AddForm={VoucherForm}
+        onAdded={onAddVoucher}
+        renderItem={(v) => ({
+          title: v.nota || 'Voucher',
+          meta: formatDateDisplay(v.fecha),
+          amount: formatCurrency(v.monto),
+        })}
+      />
 
-      <div className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <p className={styles.sectionTitle}>Guías de combustible</p>
-          {!addingGuia && (
-            <button type="button" className={styles.addLink} onClick={() => setAddingGuia(true)}>
-              + Agregar guía
-            </button>
-          )}
-        </div>
-        {addingGuia && <GuiaForm onSubmit={handleAddGuia} onCancel={() => setAddingGuia(false)} />}
-        {guiasDisponibles.length === 0 ? (
-          <p className={styles.emptySection}>No hay guías pendientes.</p>
-        ) : (
-          <ul className={styles.list}>
-            {guiasDisponibles.map((g) => (
-              <li key={g.id} className={styles.item}>
-                <label className={styles.itemLabel}>
-                  <input
-                    type="checkbox"
-                    checked={guiaIds.includes(g.id)}
-                    onChange={() => toggle(setGuiaIds, g.id)}
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.itemInfo}>
-                    <span className={styles.itemTitle}>{g.chofer}</span>
-                    <span className={styles.itemMeta}>Bus {g.bus}</span>
-                  </span>
-                  <span className={styles.itemAmount}>{formatCurrency(g.monto)}</span>
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <SeccionSeleccionable
+        title="Guías de combustible"
+        items={guiasDisponibles}
+        selectedIds={guiaIds}
+        onToggle={makeToggle(setGuiaIds)}
+        emptyText="No hay guías pendientes."
+        addLabel="+ Agregar guía"
+        AddForm={GuiaForm}
+        onAdded={onAddGuia}
+        renderItem={(g) => ({
+          title: g.chofer,
+          meta: `Bus ${g.bus}`,
+          amount: formatCurrency(g.monto),
+        })}
+      />
+
+      <SeccionSeleccionable
+        title="Otros gastos"
+        items={gastosDisponibles}
+        selectedIds={gastoIds}
+        onToggle={makeToggle(setGastoIds)}
+        emptyText="No hay otros gastos pendientes."
+        addLabel="+ Agregar gasto"
+        AddForm={GastoForm}
+        onAdded={onAddGasto}
+        renderItem={(g) => ({
+          title: g.categoria,
+          meta: formatDateDisplay(g.fecha),
+          amount: formatCurrency(g.monto),
+        })}
+      />
 
       <div className={styles.resumen}>
         <div className={styles.resumenRow}>
@@ -182,6 +205,10 @@ function NuevoSobreForm({
         <div className={styles.resumenRow}>
           <span>Guías</span>
           <span>− {formatCurrency(totalGuias)}</span>
+        </div>
+        <div className={styles.resumenRow}>
+          <span>Otros gastos</span>
+          <span>− {formatCurrency(totalGastos)}</span>
         </div>
         <div className={`${styles.resumenRow} ${styles.resumenTotal} ${efectivo < 0 ? styles.negativo : ''}`}>
           <span>Efectivo restante</span>

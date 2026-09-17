@@ -2,7 +2,10 @@ export const STORAGE_KEYS = {
   sobres: 'suray:boletos:sobres',
   vouchers: 'suray:boletos:vouchers',
   guias: 'suray:boletos:guias',
+  gastos: 'suray:boletos:gastos',
 }
+
+export const CATEGORIAS_GASTO = ['Factura', 'Peaje', 'Repuestos', 'Otro']
 
 const RAW_TYPES = [
   { id: 'T50-3600', cantidadBoletos: 50, precioBoleto: 3600 },

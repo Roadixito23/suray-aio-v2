@@ -7,18 +7,22 @@ import { useCuadernoTalonarios } from '../cuaderno/hooks/useCuadernoTalonarios.j
 import { useSobres } from './hooks/useSobres.js'
 import { useVouchers } from './hooks/useVouchers.js'
 import { useGuiasCombustible } from './hooks/useGuiasCombustible.js'
+import { useGastos } from './hooks/useGastos.js'
 import NuevoSobreForm from './components/NuevoSobreForm.jsx'
 import SobreTable from './components/SobreTable.jsx'
 import VoucherForm from './components/VoucherForm.jsx'
 import VoucherTable from './components/VoucherTable.jsx'
 import GuiaForm from './components/GuiaForm.jsx'
 import GuiaTable from './components/GuiaTable.jsx'
+import GastoForm from './components/GastoForm.jsx'
+import GastoTable from './components/GastoTable.jsx'
 import styles from './BoletosCalculadora.module.css'
 
 const TABS = [
   { id: 'sobre', label: 'Sobres', singular: 'sobre', icon: '✉️' },
   { id: 'voucher', label: 'Vouchers', singular: 'voucher', icon: '🧾' },
   { id: 'guia', label: 'Guías', singular: 'guía', icon: '⛽' },
+  { id: 'gasto', label: 'Gastos', singular: 'gasto', icon: '🧮' },
 ]
 
 const TYPE_CONFIG = {
@@ -28,6 +32,7 @@ const TYPE_CONFIG = {
     editTitle: 'Editar guía de combustible',
     Form: GuiaForm,
   },
+  gasto: { addTitle: 'Nuevo gasto', editTitle: 'Editar gasto', Form: GastoForm },
 }
 
 function BoletosCalculadora({ onBack }) {
@@ -37,6 +42,7 @@ function BoletosCalculadora({ onBack }) {
     useVouchers()
   const { guias, addGuia, updateGuia, removeGuia, marcarSobre: marcarSobreGuia } =
     useGuiasCombustible()
+  const { gastos, addGasto, updateGasto, removeGasto, marcarSobre: marcarSobreGasto } = useGastos()
 
   const [activeTab, setActiveTab] = useState('sobre')
   const [creating, setCreating] = useState(false)
@@ -51,33 +57,50 @@ function BoletosCalculadora({ onBack }) {
   )
   const vouchersPendientes = useMemo(() => vouchers.filter((v) => !v.sobreId), [vouchers])
   const guiasPendientes = useMemo(() => guias.filter((g) => !g.sobreId), [guias])
+  const gastosPendientes = useMemo(() => gastos.filter((g) => !g.sobreId), [gastos])
 
   function handleCreate(data) {
     if (activeTab === 'voucher') addVoucher(data)
     if (activeTab === 'guia') addGuia(data)
+    if (activeTab === 'gasto') addGasto(data)
     setCreating(false)
   }
 
   function handleUpdate(data) {
     if (editing.type === 'voucher') updateVoucher(editing.item.id, data)
     if (editing.type === 'guia') updateGuia(editing.item.id, data)
+    if (editing.type === 'gasto') updateGasto(editing.item.id, data)
     setEditing(null)
   }
 
   function confirmDelete() {
     if (deleting.type === 'voucher') removeVoucher(deleting.id)
     if (deleting.type === 'guia') removeGuia(deleting.id)
+    if (deleting.type === 'gasto') removeGasto(deleting.id)
     setDeleting(null)
   }
 
-  function handleCerrarSobre({ talonarios, vouchers: vouchersSeleccionados, guias: guiasSeleccionadas }) {
-    const sobre = crearSobre({ talonarios, vouchers: vouchersSeleccionados, guias: guiasSeleccionadas })
+  function handleCerrarSobre({
+    talonarios,
+    vouchers: vouchersSeleccionados,
+    guias: guiasSeleccionadas,
+    gastos: gastosSeleccionados,
+  }) {
+    const sobre = crearSobre({
+      talonarios,
+      vouchers: vouchersSeleccionados,
+      guias: guiasSeleccionadas,
+      gastos: gastosSeleccionados,
+    })
     talonarios.forEach((t) => setEstadoCuaderno(t.id, 'en-sobre'))
     if (vouchersSeleccionados.length > 0) {
       marcarSobreVoucher(vouchersSeleccionados.map((v) => v.id), sobre.id)
     }
     if (guiasSeleccionadas.length > 0) {
       marcarSobreGuia(guiasSeleccionadas.map((g) => g.id), sobre.id)
+    }
+    if (gastosSeleccionados.length > 0) {
+      marcarSobreGasto(gastosSeleccionados.map((g) => g.id), sobre.id)
     }
     setCreatingSobre(false)
   }
@@ -100,6 +123,8 @@ function BoletosCalculadora({ onBack }) {
       if (voucherIds.length > 0) marcarSobreVoucher(voucherIds, null)
       const guiaIds = (sobre.detalleGuias ?? []).map((d) => d.guiaId)
       if (guiaIds.length > 0) marcarSobreGuia(guiaIds, null)
+      const gastoIds = (sobre.detalleGastos ?? []).map((d) => d.gastoId)
+      if (gastoIds.length > 0) marcarSobreGasto(gastoIds, null)
     }
     setDeletingSobreId(null)
   }
@@ -150,6 +175,13 @@ function BoletosCalculadora({ onBack }) {
               onDelete={(id) => setDeleting({ type: 'guia', id })}
             />
           )}
+          {activeTab === 'gasto' && (
+            <GastoTable
+              gastos={gastos}
+              onEdit={(item) => setEditing({ type: 'gasto', item })}
+              onDelete={(id) => setDeleting({ type: 'gasto', id })}
+            />
+          )}
         </section>
       </div>
 
@@ -168,8 +200,10 @@ function BoletosCalculadora({ onBack }) {
             talonariosDisponibles={talonariosPorRendir}
             vouchersDisponibles={vouchersPendientes}
             guiasDisponibles={guiasPendientes}
+            gastosDisponibles={gastosPendientes}
             onAddVoucher={addVoucher}
             onAddGuia={addGuia}
+            onAddGasto={addGasto}
             onSubmit={handleCerrarSobre}
             onCancel={() => setCreatingSobre(false)}
           />

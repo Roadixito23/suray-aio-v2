@@ -5,11 +5,12 @@ import { STORAGE_KEYS } from '../constants.js'
 export function useSobres() {
   const [sobres, setSobres] = useLocalStorage(STORAGE_KEYS.sobres, [])
 
-  function crearSobre({ talonarios, vouchers, guias }) {
+  function crearSobre({ talonarios, vouchers, guias, gastos }) {
     const now = new Date().toISOString()
     const totalTalonarios = talonarios.reduce((sum, t) => sum + t.valorUnitario, 0)
     const totalVouchers = vouchers.reduce((sum, v) => sum + v.monto, 0)
     const totalGuias = guias.reduce((sum, g) => sum + g.monto, 0)
+    const totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0)
 
     const sobre = {
       id: generateId(),
@@ -29,10 +30,18 @@ export function useSobres() {
         fecha: g.fecha,
         monto: g.monto,
       })),
+      detalleGastos: gastos.map((g) => ({
+        gastoId: g.id,
+        categoria: g.categoria,
+        fecha: g.fecha,
+        monto: g.monto,
+        nota: g.nota,
+      })),
       totalTalonarios,
       totalVouchers,
       totalGuias,
-      efectivo: totalTalonarios - totalVouchers - totalGuias,
+      totalGastos,
+      efectivo: totalTalonarios - totalVouchers - totalGuias - totalGastos,
       estado: 'en-sobre',
       createdAt: now,
       updatedAt: now,

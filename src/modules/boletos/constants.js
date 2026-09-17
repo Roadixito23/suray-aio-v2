@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
 
 const RAW_TYPES = [
   { id: 'T50-3600', cantidadBoletos: 50, precioBoleto: 3600 },
+  { id: 'T50-3000', cantidadBoletos: 50, precioBoleto: 3000 },
   { id: 'T50-2500', cantidadBoletos: 50, precioBoleto: 2500 },
   { id: 'T50-1800', cantidadBoletos: 50, precioBoleto: 1800 },
   { id: 'T25-6000', cantidadBoletos: 25, precioBoleto: 6000 },

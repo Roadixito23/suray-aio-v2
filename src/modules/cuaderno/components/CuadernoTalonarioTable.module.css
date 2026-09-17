@@ -1,0 +1,110 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-1);
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.meta {
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+}
+
+.estadoBadge {
+  margin-top: 0.45rem;
+  padding: 0.25rem 0.6rem;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.estado-por-rendir {
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+}
+
+.estado-en-sobre {
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+}
+
+.estado-timbrado {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.iconButton {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container);
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.iconButton:active {
+  background: var(--color-surface-container-high);
+}
+
+.deleteButton {
+  color: var(--color-error);
+}
+
+.empty {
+  padding: var(--space-3);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  background: var(--color-surface-container-low);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}
